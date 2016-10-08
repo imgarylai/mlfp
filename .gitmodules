@@ -1,0 +1,3 @@
+[submodule "SurvivalNet"]
+	path = SurvivalNet
+	url = git@github.com:cooperlab/SurvivalNet.git
