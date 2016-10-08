@@ -1,0 +1,12 @@
+*.pyc
+*.lprof
+data/
+results/
+output/
+build
+dist
+*.egg-info
+*Run.py
+Cost_Function.py
+Bayesian_Optimization.py
+*.out
