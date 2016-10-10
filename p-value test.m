@@ -1,3 +1,4 @@
+% Without normalization
 Keep1 = ~isnan(Survival);
 Keep2 = ~isnan(Censored);
 Keep=Keep1 & Keep2;
