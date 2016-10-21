@@ -3,7 +3,8 @@
 %load data 
 clc; clear; 
 load BRCA.Data.mat; 
-maxNumCompThreads(8); 
+maxNumCompThreads(8)
+maxNumCompThreads
 
 Symbols = cellstr(Symbols);
 SymbolTypes = cellstr(SymbolTypes); 
@@ -35,23 +36,21 @@ fprintf('after dropping features with range 0, number of features %d\n\n', size(
 % imputation using euclidean distance with k neighbours 
 fprintf('before imputation, number of Nan %d\n', sum(sum(isnan(features_keep))));
 IMPUTATION_K = 1; 
-% features_imputed = knnimpute(features_keep', IMPUTATION_K)'; 
-fprintf('after imputation, number of Nan %d\n\n', sum(sum(isnan(features_keep))));
-
-% save('new_data_BRCA.mat')
+features_imputed = knnimpute(features_keep', IMPUTATION_K)'; 
+fprintf('after imputation, number of Nan %d\n\n', sum(sum(isnan(features_imputed))));
 
 
 % begin feature selection 
 
-M = 200;
-X = features_keep(1:M, :); 
+% M = 200;
+% X = features_keep(1:M, :); 
 
 
-Keep = ~isnan(Survival) & ~isnan(Censored) & (sum(isnan(X), 1) == 0);
-X = X(:, Keep);
-Survival = Survival(Keep);
-Censored = Censored(Keep);
+% Keep = ~isnan(Survival) & ~isnan(Censored) & (sum(isnan(X), 1) == 0);
+% X = X(:, Keep);
+% Survival = Survival(Keep);
+% Censored = Censored(Keep);
 
 
-
-save('newData.mat') 
+save('newData.mat', 'AvailableCNV', 'AvailableClinical', 'AvailableMutation', 'AvailableProtein', 'AvailablemRNA', 'Censored', 'Survival', 'SymbolTypes', 'Symbols', 'Samples', 'features_imputed')
+save('newData_all.mat') 
