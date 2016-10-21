@@ -4,7 +4,7 @@
 clc; clear; 
 load BRCA.Data.mat; 
 maxNumCompThreads(8); 
-
+warning('off','all')
 Symbols = cellstr(Symbols);
 SymbolTypes = cellstr(SymbolTypes); 
 
