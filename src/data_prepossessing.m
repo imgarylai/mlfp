@@ -3,8 +3,9 @@
 %load data 
 clc; clear; 
 load BRCA.Data.mat; 
-maxNumCompThreads(8)
-maxNumCompThreads
+
+maxNumCompThreads(8); 
+% warning('off','all')
 
 Symbols = cellstr(Symbols);
 SymbolTypes = cellstr(SymbolTypes); 
@@ -54,3 +55,4 @@ fprintf('after imputation, number of Nan %d\n\n', sum(sum(isnan(features_imputed
 
 save('newData.mat', 'AvailableCNV', 'AvailableClinical', 'AvailableMutation', 'AvailableProtein', 'AvailablemRNA', 'Censored', 'Survival', 'SymbolTypes', 'Symbols', 'Samples', 'features_imputed')
 save('newData_all.mat') 
+
