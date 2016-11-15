@@ -58,8 +58,6 @@ end
 
 
 % for testing
-% we need to run the framework one more time to get the best beta 
-% CI_validation = evaluation_func(func, 1, best_params); 
 CI_test = evaluation_func(func, 2, best_params); 
 fprintf('validation CI %f, test CI %f, best parameter ', CI_validation, CI_test); 
 disp(best_params); 

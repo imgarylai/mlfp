@@ -16,13 +16,7 @@ persistent features_mutation_train_val
 persistent features_mRNA_protein_train_val 
 persistent survival_train_val
 persistent censored_train_val 
-% 
-% persistent features_clinical_validation 
-% persistent features_CNV_validation 
-% persistent features_mutation_validation 
-% persistent features_mRNA_protein_validation 
-% persistent survival_validation
-% persistent censored_validation
+
 
 persistent features_clinical_test 
 persistent features_CNV_test 
@@ -32,8 +26,6 @@ persistent survival_test
 persistent censored_test 
 
 
-% persistent Train_Validation; 
-% persistent Test; 
 persistent Folds; 
 
 
@@ -44,17 +36,8 @@ K = 3;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% if this is first time run the evaluation function, load data from disk 
 if (isempty(need_to_load_data))
-    load '../data/cleanedData_BRCA.mat'; 
-%     M = 200;
-%     Features = Features(1:M, :)';  %#ok<*NODEF>
-% 
-%     Survival = Survival'; 
-%     Censored = Censored';
-%     Keep = ~isnan(Survival) & ~isnan(Censored) & (sum(isnan(Features), 2) == 0);
-% 
-%     Features = Features(Keep, :); 
-%     Survival = Survival(Keep);
-%     Censored = Censored(Keep);
+    load '../../data/clean/cleanedData_BRCA.mat'; 
+
 
     N = length(Survival); 
     N_Train_Validation = ceil(N / 4 * 3); 
@@ -66,11 +49,6 @@ if (isempty(need_to_load_data))
     Folds(Folds>K) = 0;
 
 
-
-    % now seperate data into train_validation, test
-%     Train = 1 : ceil(N/2);
-%     Validation = ceil(N/2)+1 : ceil(3*N/4);
-%     Test = ceil(3*N/4)+1 : N; 
 
     features_clinical_train_val       =    features_clinical(Train_Validation, :); %#ok<*NODEF>
     features_CNV_train_val            =    features_CNV(Train_Validation, :);      %#ok<*NODEF>

@@ -40,7 +40,7 @@ NO_OUTPUT = true;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% if this is first time run the evaluation function, load data from disk 
 if (isempty(need_to_load_data))
-    load '../data/cleanedData_BRCA.mat'; 
+    load '../../data/clean/cleanedData_BRCA.mat'; 
 
     N = length(Survival); 
 
