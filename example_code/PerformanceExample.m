@@ -5,7 +5,7 @@
 warning('off','all')
 
 % read in data and extract minimal features
-load './GBMLGG.Data.mat';
+load '../data/GBMLGG.Data.mat';
 
 %define a basic model containing IDH mutations, age and chromosomes 1p/19q
 x1 = Features(strcmp(cellstr(Symbols),...
