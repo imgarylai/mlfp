@@ -13,6 +13,10 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% demonstration parameters 
+addpath(genpath('utils')); 
+addpath(genpath('feature_selections')); 
+
+
 func = @test_feature_selection; 
 % func = @ml_PCA; 
 
