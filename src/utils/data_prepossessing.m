@@ -135,14 +135,14 @@ fprintf('after imputation, number of Nan %d\n\n', sum(sum(isnan(features_mRNA_pr
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% normalize mRNA and protein features(zscore) and age in clinical 
+%% normalize mRNA and protein features(zscore) and age in clinical
 % features_mRNA_protein_cov   = repmat(diag(cov(features_mRNA_protein))', ...
 %                                  size(features_mRNA_protein, 1), 1);
 % features_mRNA_protein_cov_mean = repmat(mean(features_mRNA_protein, 1), ...
 %                                     size(features_mRNA_protein, 1), 1);
 % features_mRNA_protein = (features_mRNA_protein - features_mRNA_protein_cov_mean);
 % features_mRNA_protein = features_mRNA_protein./features_mRNA_protein_cov;
-features_mRNA_protein = zscore(features_mRNA_protein); 
+features_mRNA_protein = zscore(features_mRNA_protein);
 features_clinical(:, 1) = zscore(features_clinical(:, 1));
 
 toc;
@@ -151,6 +151,6 @@ tic;
 %% save results
 save('../data/cleanedData_BRCA.mat', 'features_clinical', 'features_CNV', 'features_mutation', ...
      'features_mRNA_protein', 'Survival', 'Censored')
-save('../data/cleanedData_BRCA_all.mat') 
+save('../data/cleanedData_BRCA_all.mat')
 
 toc;

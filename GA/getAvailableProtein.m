@@ -1,6 +1,6 @@
 function y = getAvailableProtein(d)
 % What will be done in this process:
-%   1) Extract Protein data from training set 
+%   1) Extract Protein data from training set
 %   2) Drop samples with number of NaN > 0
 %   3) Drop feature with NaN > Threshold
 
@@ -16,7 +16,7 @@ d.SymbolTypes = d.SymbolTypes(feature_keep_indices,:);
 
 
 
-sample_keep_indices = (sum(isnan(d.Features),1)==0); 
+sample_keep_indices = (sum(isnan(d.Features),1)==0);
 d.Features=d.Features(:,sample_keep_indices);
 d.Survival = d.Survival(sample_keep_indices);
 d.Censored = d.Censored(sample_keep_indices);

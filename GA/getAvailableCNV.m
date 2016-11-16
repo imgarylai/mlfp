@@ -1,6 +1,6 @@
 function y = getAvailableCNV(d)
 % What will be done in this process:
-%   1) Extract CNVxxxx data from training set 
+%   1) Extract CNVxxxx data from training set
 %   2) Drop all samples with number of NaN > 0
 
 
@@ -8,7 +8,7 @@ d.Features = d.Features(strmatch({'CNV'},d.SymbolTypes),strcmp(d.AvailableCNV, '
 d.Symbols = d.Symbols(strmatch({'CNV'},d.SymbolTypes));
 d.SymbolTypes = d.SymbolTypes(strmatch({'CNV'},d.SymbolTypes));
 
-sample_keep_indices = (sum(isnan(d.Features), 1)==0); 
+sample_keep_indices = (sum(isnan(d.Features), 1)==0);
 
 d.Features=d.Features(:,sample_keep_indices);
 d.Survival = d.Survival(sample_keep_indices);
