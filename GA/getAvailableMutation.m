@@ -1,6 +1,6 @@
 function y = getAvailableMutation(d)
 % What will be done in this process:
-%   1) Extract mutation data from training set 
+%   1) Extract mutation data from training set
 %   2) Drop all samples with number of NaN > 0
 
 
@@ -8,7 +8,7 @@ d.Features = d.Features(strcmp(d.SymbolTypes, 'Mutation'),strcmp(d.AvailableMuta
 d.Symbols = d.Symbols(strcmp(d.SymbolTypes, 'Mutation'));
 d.SymbolTypes = d.SymbolTypes(strcmp(d.SymbolTypes, 'Mutation'));
 
-sample_keep_indices = (sum(isnan(d.Features), 1)==0); 
+sample_keep_indices = (sum(isnan(d.Features), 1)==0);
 
 d.Features=d.Features(:,sample_keep_indices);
 d.Survival = d.Survival(sample_keep_indices);

@@ -1,6 +1,6 @@
 function c = cIndex(Beta, X, Survival, Censoring)
-%Compute concordance-index of survival times given survival, censoring, 
-%model coefficients and predictor values. See Frank Harrell's "Regression 
+%Compute concordance-index of survival times given survival, censoring,
+%model coefficients and predictor values. See Frank Harrell's "Regression
 %Modeling Strategies".
 %inputs:
 %Beta - P x 1 vector of model coefficients.

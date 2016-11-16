@@ -18,4 +18,3 @@ for i = 1:K
         d.Censored(Folds == i));
 end
 y=-mean(C);
-

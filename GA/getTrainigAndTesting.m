@@ -8,7 +8,7 @@ d_copy=d;
 testing_keep_indices = (sum(isnan(d.Features), 1) < 4);
 training_keep_indices = ~testing_keep_indices;
 
-d.Features = d.Features(:,testing_keep_indices); 
+d.Features = d.Features(:,testing_keep_indices);
 d.Survival = d.Survival(testing_keep_indices);
 d.Censored = d.Censored(testing_keep_indices);
 d.AvailableProtein = d.AvailableProtein(testing_keep_indices);
@@ -18,7 +18,7 @@ d.AvailableMutation = d.AvailableMutation(testing_keep_indices);
 d.AvailablemRNA = d.AvailablemRNA(testing_keep_indices);
 test = d;
 
-d_copy.Features = d_copy.Features(:,training_keep_indices); 
+d_copy.Features = d_copy.Features(:,training_keep_indices);
 d_copy.Survival = d_copy.Survival(training_keep_indices);
 d_copy.Censored = d_copy.Censored(training_keep_indices);
 d_copy.AvailableProtein = d_copy.AvailableProtein(training_keep_indices);

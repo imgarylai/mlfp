@@ -1,7 +1,7 @@
 function y = getTestingError(train,test,selected_feature)
 % This function is used to report final testing error
 % Here all seperated model will be combined to form a complete model
-% 
+%
 %
 %
 % remaining unfinished!!!!!
