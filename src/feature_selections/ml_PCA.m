@@ -18,7 +18,7 @@ function newFeatures = ml_PCA(mode, features_clinical, features_CNV, ...
 
 
 
-addpath(genpath('../extensions/drtoolbox')); 
+addpath(genpath('../../extensions/drtoolbox')); 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 %% parameters for PCA   
@@ -66,13 +66,17 @@ else
         
     end 
     features_clinical_PCA = features_clinical * features_clinical_PCA_mapping.M;
-    features_clinical_PCA = features_clinical_PCA - mean(features_clinical_PCA); 
+    features_clinical_PCA = features_clinical_PCA - ...
+        repmat(mean(features_clinical_PCA, 1), size(features_clinical_PCA, 1), 1); 
     features_CNV_PCA = features_CNV * features_CNV_PCA_mapping.M;
-    features_CNV_PCA = features_CNV_PCA - mean(features_CNV_PCA); 
+    features_CNV_PCA = features_CNV_PCA - ...
+        repmat(mean(features_CNV_PCA, 1), size(features_CNV_PCA, 1), 1); 
     features_mutation_PCA = features_mutation * features_mutation_PCA_mapping.M;
-    features_mutation_PCA = features_mutation_PCA - mean(features_mutation_PCA); 
+    features_mutation_PCA = features_mutation_PCA - ...
+        repmat(mean(features_mutation_PCA, 1), size(features_mutation_PCA, 1), 1); 
     features_mRNA_protein_PCA = features_mRNA_protein * features_mRNA_protein_PCA_mapping.M;
-    features_mRNA_protein_PCA = features_mRNA_protein_PCA - mean(features_mRNA_protein_PCA); 
+    features_mRNA_protein_PCA = features_mRNA_protein_PCA - ...
+        repmat(mean(features_mRNA_protein_PCA, 1), size(features_mRNA_protein_PCA, 1), 1); 
 end 
 
 
