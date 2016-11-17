@@ -39,8 +39,9 @@ mlfp/
 |     | PerformanceExample.m
 |____ extensions/
 |     | ...
-|____ GA
-|____ src
+|____ GA/
+|     | ...
+|____ src/
 |     |____ bin/
 |           | ...
 |     |____ feature_selections/
