@@ -1,12 +1,12 @@
 clear
-warning('off','all')
+warning('off', 'all')
 original_BRCA = load ('BRCA.Data.mat');
-prepro_BRCA=preprocessing(original_BRCA);
+prepro_BRCA = preprocessing(original_BRCA);
 [train,test] = getTrainigAndTesting(prepro_BRCA);
-clinical=getAvailableClinical(train);
-mutation=getAvailableMutation(train);
-CNV=getAvailableCNV(train);
-protein=getAvailableProtein(train);
+clinical = getAvailableClinical(train);
+mutation = getAvailableMutation(train);
+CNV = getAvailableCNV(train);
+protein = getAvailableProtein(train);
 
 p = size(clinical.Features,1); % p=number of feature
 GenomeLength = p; % This is the number of features in the dataset
@@ -26,8 +26,8 @@ options = gaoptimset('CreationFcn', {@PopFunction},...
 
 %'UseParallel', true
 nVars = p;
-FitnessFunction = @(x)c_index_fitness(x,clinical);
+FitnessFunction = @(x)c_index_fitness(x, clinical);
 
-[chromosome,~,~,~,~,~] = ga(FitnessFunction,nVars,options);
+[chromosome, ~, ~, ~, ~, ~] = ga(FitnessFunction, nVars, options);
 Best_feature_set = chromosome % Best feature set
-Best_feature_Index = find(Best_feature_set==1) % Index of Chromosome
+Best_feature_Index = find(Best_feature_set == 1) % Index of Chromosome
