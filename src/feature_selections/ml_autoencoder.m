@@ -19,5 +19,6 @@ function newFeatures = ml_autoencoder(X, N)
     fprintf('MSE error of Autoencoder: %f. \n', mseError);
     v.features = newFeatures;
     v.autoencoder = autoenc;
-    save('data/save/encoder.mat', '-struct', 'v');
+    fname = sprintf('data/save/autoencoder-%d-%d.mat', originalFeatureSize, newFeatureSize);
+    save(fname, '-struct', 'v');
 end
