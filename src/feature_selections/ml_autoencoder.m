@@ -1,7 +1,7 @@
 %
 % Input matrix: X, which is samples by features
 %       
-function newFeatures = ml_autoencoder(X, N)
+function [newFeatures, mseError]= ml_autoencoder(X, N)
     [originalFeatureSize, originalSampleSize] = size(X);
     disp('Please check the following information.');
     fprintf('Feature Number: %d, Sample Number: %d. \n', ...
@@ -17,8 +17,8 @@ function newFeatures = ml_autoencoder(X, N)
     XReconstructed = predict(autoenc, X);
     mseError = mse(X - XReconstructed);
     fprintf('MSE error of Autoencoder: %f. \n', mseError);
-    v.features = newFeatures;
-    v.autoencoder = autoenc;
-    fname = sprintf('data/save/autoencoder-%d-%d.mat', originalFeatureSize, newFeatureSize);
-    save(fname, '-struct', 'v');
+%     v.features = newFeatures;
+%     v.autoencoder = autoenc;
+%     fname = sprintf('data/save/autoencoder-%d-%d.mat', originalFeatureSize, newFeatureSize);
+%     save(fname, '-struct', 'v'); 
 end
