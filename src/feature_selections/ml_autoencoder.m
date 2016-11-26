@@ -17,8 +17,8 @@ function [newFeatures, mseError]= ml_autoencoder(X, N)
     XReconstructed = predict(autoenc, X);
     mseError = mse(X - XReconstructed);
     fprintf('MSE error of Autoencoder: %f. \n', mseError);
-%     v.features = newFeatures;
-%     v.autoencoder = autoenc;
-%     fname = sprintf('data/save/autoencoder-%d-%d.mat', originalFeatureSize, newFeatureSize);
-%     save(fname, '-struct', 'v'); 
+    v.features = newFeatures;
+    v.autoencoder = autoenc;
+    fname = sprintf('data/save/autoencoder-%d-%d.mat', originalFeatureSize, newFeatureSize);
+    save(fname, '-struct', 'v'); 
 end
