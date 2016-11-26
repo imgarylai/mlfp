@@ -1,4 +1,4 @@
-function [CI, best_params] = eva(feature_selection_func, eva_type, feature_select_params) 
+function [] = eva(feature_selection_func, eva_type, feature_select_params) 
 % used for evaluate feature selection function
 % input: feature_selection_func: function pointer for feature selection
 %        eva_type: 1: train and validation
@@ -31,16 +31,38 @@ persistent features_mRNA_protein_test
 persistent survival_test
 persistent censored_test
 
+persistent Train 
+persistent Validation 
+persistent Test 
+
+persistent X_train
+persistent X_validation 
+persistent X_test 
+
+persistent features_clinical
+persistent features_CNV
+persistent features_mutation
+persistent features_mRNA_protein
+
+
+
 persistent Beta
 % persistent persistent_best_CI
 % persistent persistent_best_beta
 % persistent persistent_best_params
-NO_OUTPUT = true;
+NO_OUTPUT = false;
+
+persistent name_mapping 
+
+
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% if this is first time run the evaluation function, load data from disk
 if (isempty(need_to_load_data))
-    load 'data/clean/cleanedData_BRCA.mat';
+    load '../data/clean/cleanedData_BRCA.mat';
 
     N = length(Survival);
 
@@ -79,85 +101,107 @@ end
 
 
 warning('off','all')
-
+name_mapping = {features_clinical, 'clinical'; features_CNV, 'CNV'; ...
+    features_mutation,'mutation'; features_mRNA_protein, 'mRNA_protein'}; 
+% CI = zeros(4);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% begin feature selection test
-% feature_selection_func  =   @test_feature_selection;
 if (eva_type == 1)
     % use train and validation to obatin the best beta
     if ~isempty(feature_select_params) && size(feature_select_params, 1) ~= 0
         % if you choose to pass in parameters for feature selection func
-        CIs = zeros(size(feature_select_params, 1));
-        for i=1:size(feature_select_params, 1)
-            X_train  =  feature_selection_func('train', features_clinical_train, ...
-                            features_CNV_train, features_mutation_train, ...
-                            features_mRNA_protein_train, survival_train, ...
-                            censored_train, feature_select_params(i, :));
-            Beta = coxphfit(X_train, survival_train, 'Censoring', censored_train);
+        
+        for t=1:4
+            CIs = zeros(size(feature_select_params, 1));
+            for i=1:size(feature_select_params, 1)
+                X  =  feature_selection_func('train', name_mapping{t,1}, ...
+                    name_mapping{t,2}, feature_select_params(i, :));
+                
+                X_train = X(Train, :);
+                X_validation = X(Validation, :);
+                Beta = coxphfit(X_train, survival_train, 'Censoring', censored_train);
+                CI_validation   =   cIndex(Beta, X_validation, survival_validation, censored_validation);
 
-
-            X_validation = feature_selection_func('validation', features_clinical_validation, ...
-                                features_CNV_validation, features_mutation_validation, ...
-                                features_mRNA_protein_validation, survival_validation, ...
-                                censored_validation, feature_select_params(i, :));
-
-            CI_validation   =   cIndex(Beta, X_validation, survival_validation, censored_validation);
-            if ~NO_OUTPUT
-                fprintf('group %d of parameters, standard validation CI: %f\n', i, CI_validation);
+                if ~NO_OUTPUT
+                    fprintf('%s features, group %d of parameters, standard validation CI: %f\n', ... 
+                        name_mapping{t, 2}, i, CI_validation);
+                end
+                CIs(i) = CI_validation;
             end
-            CIs(i) = CI_validation;
-        end
-
-        % now select the best CI and corresponding parameter group
-        [max_CI, max_CI_index] = max(CIs);
-        max_CI = max_CI(1);
-        max_CI_index = max_CI_index(1);
-        CI = max_CI;
-        best_params = feature_select_params(max_CI_index, :);
-        fprintf('group %d has the best performance, standard validation CI:%f\n', max_CI_index, max_CI);
-
-    % no feature selection parameter is provided
-    else
-        X_train  =  feature_selection_func('train', features_clinical_train, ...
-                        features_CNV_train, features_mutation_train, ...
-                        features_mRNA_protein_train, survival_train, censored_train, []);
-        Beta = coxphfit(X_train, survival_train, 'Censoring', censored_train);
-
-
-        X_validation = feature_selection_func('validation', features_clinical_validation, ...
-                            features_CNV_validation, features_mutation_validation, ...
-                            features_mRNA_protein_validation, survival_validation, ...
-                            censored_validation, []);
-
-        CI_validation   =   cIndex(Beta, X_validation, survival_validation, censored_validation);
-        CI = CI_validation;
-        best_params = [];
-        if ~NO_OUTPUT
-            fprintf('standard validation CI: %f\n', CI_validation);
-        end
+            
+            % now select the best CI and corresponding parameter group
+            [max_CI, max_CI_index] = max(CIs);
+            max_CI = max_CI(1);
+            max_CI_index = max_CI_index(1);
+            CI = max_CI;
+            best_params = feature_select_params(max_CI_index, :);
+            fprintf('%s features, group %d has the best performance, standard validation CI:%f\n',...
+                name_mapping{t, 2}, max_CI_index, max_CI);
+            plot(feature_select_params, CIs); 
+            xlabel('parameters');
+            ylabel('validation CI');
+            saveas(gcf, strcat(name_mapping{t, 2}, '_validationCI.png'));
+            
+            % now calculate test error 
+            X  =  feature_selection_func('train', name_mapping{t,1}, ...
+                name_mapping{t,2}, feature_select_params(max_CI_index, :));
+            
+            X_train = X(Train, :);
+            X_validation = X(Validation, :);
+            X_test = X(Test, :);
+            Beta = coxphfit(X_train, survival_train, 'Censoring', censored_train);
+            CI_test   =   cIndex(Beta, X_test, survival_test, censored_test);
+            fprintf('%s features, best parameter test CI :%f\n',...
+                name_mapping{t, 2}, CI_test); 
+        end 
+        
+        
+        
+        
+        
+        
+%     % no feature selection parameter is provided
+%     else
+%         X_train  =  feature_selection_func('train', features_clinical_train, ...
+%                         features_CNV_train, features_mutation_train, ...
+%                         features_mRNA_protein_train, survival_train, censored_train, []);
+%         Beta = coxphfit(X_train, survival_train, 'Censoring', censored_train);
+% 
+% 
+%         X_validation = feature_selection_func('validation', features_clinical_validation, ...
+%                             features_CNV_validation, features_mutation_validation, ...
+%                             features_mRNA_protein_validation, survival_validation, ...
+%                             censored_validation, []);
+% 
+%         CI_validation   =   cIndex(Beta, X_validation, survival_validation, censored_validation);
+%         CI = CI_validation;
+%         best_params = [];
+%         if ~NO_OUTPUT
+%             fprintf('standard validation CI: %f\n', CI_validation);
+%         end
     end
-elseif (eva_type == 2)
-    % test
-    if (~isempty(feature_select_params) && size(feature_select_params, 1) ~= 0)
-        if (size(feature_select_params, 1) ~= 1)
-            error('for test only one group parameter is allowed');
-        end
-        X_test  =  feature_selection_func('test', features_clinical_test, ...
-                features_CNV_test, features_mutation_test, ...
-                features_mRNA_protein_test, survival_test, censored_test, feature_select_params);
-    else
-        X_test  =  feature_selection_func('test', features_clinical_test, ...
-                features_CNV_test, features_mutation_test, ...
-                features_mRNA_protein_test, survival_test, censored_test, []);
-    end
-
-    CI_test =  cIndex(Beta, X_test, survival_test, censored_test);
-    CI = CI_test;
-    best_params = [];
-    if ~NO_OUTPUT
-        fprintf('standard test CI: %f\n', CI);
-    end
+% elseif (eva_type == 2)
+%     % test
+%     if (~isempty(feature_select_params) && size(feature_select_params, 1) ~= 0)
+%         if (size(feature_select_params, 1) ~= 1)
+%             error('for test only one group parameter is allowed');
+%         end
+%         X_test  =  feature_selection_func('test', features_clinical_test, ...
+%                 features_CNV_test, features_mutation_test, ...
+%                 features_mRNA_protein_test, survival_test, censored_test, feature_select_params);
+%     else
+%         X_test  =  feature_selection_func('test', features_clinical_test, ...
+%                 features_CNV_test, features_mutation_test, ...
+%                 features_mRNA_protein_test, survival_test, censored_test, []);
+%     end
+% 
+%     CI_test =  cIndex(Beta, X_test, survival_test, censored_test);
+%     CI = CI_test;
+%     best_params = [];
+%     if ~NO_OUTPUT
+%         fprintf('standard test CI: %f\n', CI);
+%     end
 else
     disp('what do you give as type');
 end
