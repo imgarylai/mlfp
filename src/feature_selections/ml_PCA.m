@@ -1,5 +1,4 @@
-function newFeatures = ml_PCA(mode, features_clinical, features_CNV, ... 
-    features_mutation, features_mRNA_protein, Survival, Censored, selection_params)
+function newFeatures = ml_PCA(mode, features, feature_type, selection_params)
 % this is an example function that using PCA to show how to select/extract
 % features and how to use the evaluation framework,
 % REMEMBER,
@@ -18,10 +17,17 @@ function newFeatures = ml_PCA(mode, features_clinical, features_CNV, ...
 
 
 
-addpath(genpath('../../extensions/drtoolbox'));
+addpath(genpath('../extensions/drtoolbox'));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% parameters for PCA
+%% parameters for PCA 
+% this is used to store the the weight or mapping parameter obtained from 
+% training,
+% a persistent variable will keep its value, after you finish this
+% function, in other words, declare all the parameters/weights that
+% obtained during training as persistent, then you are able to use it
+% during validation/test 
+
 persistent features_clinical_PCA_mapping;
 persistent features_CNV_PCA_mapping;
 persistent features_mutation_PCA_mapping;
@@ -29,56 +35,56 @@ persistent features_mRNA_protein_PCA_mapping;
 
 
 
-if (isempty(selection_params))
-    N1 = 10;
-    N2 = 10;
-    N3 = 10;
-    N4 = 10;
-else
-    if (size(selection_params) ~= 4)
-        error('we need four parameters for PCA');
-    end
-    N1 = selection_params(1);
-    N2 = selection_params(2);
-    N3 = selection_params(3);
-    N4 = selection_params(4);
-end
+% this is the passed in parameter for PCA, 
+% in PCA this parameter is just a scalar that specifies the desired
+% dimentionality of newX 
+
+desired_dimentionality = selection_params; 
 
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% PCA begins
+% PCA uses the features passed in during training to find out the mapping from
+% old features to new features, then the mapping is stored in a persistent
+% variable features_PCA_mapping, then when the mode is test or validation,
+% it just uses the variable features_PCA_mapping to transform features 
+
 if (strcmp(mode, 'train'))
-    [features_clinical_PCA, features_clinical_PCA_mapping] = ...
-        compute_mapping(features_clinical, 'PCA', N1);
-    [features_CNV_PCA, features_CNV_PCA_mapping] = ...
-        compute_mapping(features_CNV, 'PCA', N2);
-    [features_mutation_PCA, features_mutation_PCA_mapping] = ...
-        compute_mapping(features_mutation, 'PCA', N3);
-    [features_mRNA_protein_PCA, features_mRNA_protein_PCA_mapping] = ...
-        compute_mapping(features_mRNA_protein, 'PCA', N4);
-else
-    % make sure it has been trained,
-    % otherwise you should not get mapped test features
-    if (isempty(features_clinical_PCA_mapping))
-        error('you haven''t run training data through PCA yet, please do this first');
-
+    if (strcmp(feature_type, 'clinical'))
+        [newFeatures, features_clinical_PCA_mapping] = ...
+            compute_mapping(features, 'PCA', desired_dimentionality);
+    elseif (strcmp(feature_type, 'CNV'))
+        [newFeatures, features_CNV_PCA_mapping] = ...
+            compute_mapping(features, 'PCA', desired_dimentionality);
+    elseif (strcmp(feature_type, 'mutation'))
+        [newFeatures, features_mutation_PCA_mapping] = ...
+            compute_mapping(features, 'PCA', desired_dimentionality);
+    elseif (strcmp(feature_type, 'mRNA_protein'))
+        [newFeatures, features_mRNA_protein_PCA_mapping] = ...
+            compute_mapping(features, 'PCA', desired_dimentionality);            
     end
-    features_clinical_PCA = features_clinical * features_clinical_PCA_mapping.M;
-    features_clinical_PCA = features_clinical_PCA - ...
-        repmat(mean(features_clinical_PCA, 1), size(features_clinical_PCA, 1), 1);
-    features_CNV_PCA = features_CNV * features_CNV_PCA_mapping.M;
-    features_CNV_PCA = features_CNV_PCA - ...
-        repmat(mean(features_CNV_PCA, 1), size(features_CNV_PCA, 1), 1);
-    features_mutation_PCA = features_mutation * features_mutation_PCA_mapping.M;
-    features_mutation_PCA = features_mutation_PCA - ...
-        repmat(mean(features_mutation_PCA, 1), size(features_mutation_PCA, 1), 1);
-    features_mRNA_protein_PCA = features_mRNA_protein * features_mRNA_protein_PCA_mapping.M;
-    features_mRNA_protein_PCA = features_mRNA_protein_PCA - ...
-        repmat(mean(features_mRNA_protein_PCA, 1), size(features_mRNA_protein_PCA, 1), 1);
+else
+    % make sure it has been trained, meaning features_mapping is not
+    % uninitialized 
+    % otherwise you should not get mapped test features
+
+    %%%%%% select corresponding mapping according to feature type 
+    if (strcmp(feature_type, 'clinical'))
+        current_mapping = features_clinical_PCA_mapping; 
+    elseif (strcmp(feature_type, 'CNV'))
+        current_mapping = features_CNV_PCA_mapping; 
+    elseif (strcmp(feature_type, 'mutation'))
+        current_mapping = features_mutation_PCA_mapping; 
+    elseif (strcmp(feature_type, 'mRNA_protein'))
+        current_mapping = features_mRNA_protein_PCA_mapping; 
+    end
+
+    if (isempty(current_mapping))
+        error('you haven''t run training data through PCA yet, please do this first');
+    end
+    
+    newFeatures = features * current_mapping.M; 
+    newFeatures = newFeatures - repmat(mean(newFeatures, 1), size(newFeatures, 1), 1);    
 end
-
-
-newFeatures = [features_clinical_PCA features_CNV_PCA ...
-        features_mutation_PCA features_mRNA_protein_PCA];
