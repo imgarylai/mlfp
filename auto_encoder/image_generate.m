@@ -1,8 +1,10 @@
-load 'data/clean/clean.mat';
+load '../data/clean/clean.mat';
+
 T = 5;
 X = protein_train.Features;
 [featureSize, ~] = size(X);
 mse = zeros(T, featureSize);
+save_path = sprintf('generated_data/%s.mat', char(protein_train.SymbolTypes(1)));
 
 for t = 1:T
     disp('-------------------------------------');
@@ -14,16 +16,13 @@ for t = 1:T
             [newFeatureSize, newSampleSize] = size(newFeatures);
             v.features = newFeatures;
             v.autoencoder = autoenc;
-            fname = sprintf('auto_encoder/generated_data/autoencoder-%s-%d-%d.mat', char(protein_train.SymbolTypes(1)) ,featureSize, newFeatureSize);
+            fname = sprintf('generated_data/autoencoder-%s-%d-%d.mat', char(protein_train.SymbolTypes(1)) ,featureSize, newFeatureSize);
             save(fname, '-struct', 'v'); 
         end 
         mse(t, i) = mseError;
+        save(save_path , 'mse');
     end
 end
-
-fname = sprintf('auto_encoder/generated_data/%s.mat', char(protein_train.SymbolTypes(1)));
-
-save(fname, 'mse');
 
 % meanMse = mean(mse);
 % stdMse = std(mse);
