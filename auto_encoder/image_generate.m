@@ -21,3 +21,15 @@ for t = 1:T
         mse(t, i) = mseError;
     end
 end
+
+meanMse = mean(mse);
+stdMse = std(mse);
+figure;
+hold on;
+title('MSE of the of the dimentional reduction by autoencoder');
+xlabel('number of neuro in the hidden layer');
+ylabel('Average MSE of 5 iterations');
+H1 = plot(1:featureSize, meanMse, '--');
+H2 = plot(1:featureSize, [meanMse - stdMse; meanMse + stdMse],':');
+legend([H1,H2(1)],'mse','mse std', 'Location', 'Northeast');
+hold off;
