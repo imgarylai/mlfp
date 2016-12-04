@@ -1,1 +1,12 @@
-image_generator(Clinical);
+clear;
+load('BRCA.mat');
+image_generator('BRCA', Clinical);
+image_generator('BRCA', CNV);
+image_generator('BRCA', Mutation);
+image_generator('BRCA', Protein);
+clear;
+load('GBMLGG.mat');
+image_generator('GBMLGG', Clinical);
+image_generator('GBMLGG', CNV);
+image_generator('GBMLGG', Mutation);
+image_generator('GBMLGG', Protein);

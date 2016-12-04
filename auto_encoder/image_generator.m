@@ -1,9 +1,9 @@
-function image_generator(type)
+function image_generator(prefix ,type)
     T = 5;
     X = type.Features;
     [featureSize, ~] = size(X);
     mse = zeros(T, featureSize);
-    save_path = sprintf('auto_encoder/generated_data/%s.mat', char(type.SymbolTypes(1)));
+    save_path = sprintf('auto_encoder/generated_data/%s/%s.mat', char(prefix), char(type.SymbolTypes(1)));
 
     for t = 1:T
         disp('-------------------------------------');
