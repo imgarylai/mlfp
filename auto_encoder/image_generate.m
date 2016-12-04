@@ -1,5 +1,5 @@
 load '../data/clean/clean.mat';
-
+maxNumCompThreads(8);
 T = 5;
 X = protein_train.Features;
 [featureSize, ~] = size(X);
