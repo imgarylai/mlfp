@@ -1,0 +1,12 @@
+[row, column] = size(mse);
+meanMse = mean(mse);
+stdMse = std(mse);
+figure;
+hold on;
+title('BRCA - Clinical');
+xlabel('Numbers of neuro in the hidden layer.');
+ylabel('MSE');
+H1 = plot(1:column, meanMse, '-', 'lineWidth', 2);
+H2 = plot(1:column, [meanMse - stdMse; meanMse + stdMse],':', 'lineWidth', 2);
+legend([H1,H2(1)],'mse','mse std', 'Location', 'Northeast');
+hold off;
