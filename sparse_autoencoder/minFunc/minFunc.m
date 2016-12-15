@@ -345,13 +345,13 @@ end
 
 % Output Log
 if verboseI
-    fprintf('%10s %10s %15s %15s %15s\n','Iteration','FunEvals','Step Length','Function Val','Opt Cond');
+    %fprintf('%10s %10s %15s %15s %15s\n','Iteration','FunEvals','Step Length','Function Val','Opt Cond');
 end
 
 if logfile
     fid = fopen(logfile, 'a');
     if (fid > 0)
-        fprintf(fid, '-- %10s %10s %15s %15s %15s\n','Iteration','FunEvals','Step Length','Function Val','Opt Cond');
+        %fprintf(fid, '-- %10s %10s %15s %15s %15s\n','Iteration','FunEvals','Step Length','Function Val','Opt Cond');
         fclose(fid);
     end
 end
@@ -1069,14 +1069,14 @@ for i = 1:maxIter
 
     % Output iteration information
     if verboseI
-        fprintf('%10d %10d %15.5e %15.5e %15.5e\n',i,funEvals*funEvalMultiplier,t,f,sum(abs(g)));
+%         fprintf('%10d %10d %15.5e %15.5e %15.5e\n',i,funEvals*funEvalMultiplier,t,f,sum(abs(g)));
     end
 
     if logfile
         fid = fopen(logfile, 'a');
         if (fid > 0)
-            fprintf(fid, '-- %10d %10d %15.5e %15.5e %15.5e\n',i,funEvals*funEvalMultiplier,t,f,sum(abs(g)));
-            fclose(fid);
+%             fprintf(fid, '-- %10d %10d %15.5e %15.5e %15.5e\n',i,funEvals*funEvalMultiplier,t,f,sum(abs(g)));
+%             fclose(fid);
         end
     end
 
