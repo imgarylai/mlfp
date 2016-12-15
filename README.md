@@ -10,14 +10,7 @@ $ git clone git@github.com:imgarylai/mlfp.git
 
 ### Setup data
 
-1. Create data folder
-
-```
-cd mlfp
-mkdir -p data/clean
-```
-
-2. Download and unzip [cleaned data](https://www.dropbox.com/sh/1njsvadxepv8dxa/AAB1FFMB_Fy9EOZFmTi5mSS-a?dl=1) to `mlfp/data/clean`
+Download and unzip [cleaned data](https://github.com/imgarylai/mlfp/wiki/Clean-data-%5BFinal%5D) to `mlfp/data/`
 
 ### Matlab setup
 
@@ -27,35 +20,42 @@ HOME -> ENVIRONMENT -> Set path ->Add with subdirectories
 
 Add `mlfp` directory to MATLAB PATH
 
+### How to run
+
+Run main.m, then you will be prompted to enter. 
+
 ### File directory
 ```
 mlfp/
+|____ main.m
+|
+|____ cIndex.m
+|
 |____ data/
-|____ clean/
-|     | cleanedData_BRCA_all.mat
-|     | cleanedData_BRCA.mat
-|____ example_code/
-|     | cindex.m
-|     | PerformanceExample.m
-|____ extensions/
-|     | ...
-|____ GA/
-|     | ...
-|____ src/
-|     |____ bin/
+|     | BRCA.mat (download needed)
+|     | GBMLGG.mat (download needed)
+|
+|____ autoencoder/
+|     |autoencoder.m
+|     
+|____ genetic_algorithm/
+|     | c_index_fitness.m
+|     | PopFunction.m
+|     
+|____ PCA/
+|     | newPCA.m
+|     |____ extensions/
 |           | ...
-|     |____ feature_selections/
-|           | ml_PCA.m
-|           | test_feature_selection.m
-|     |____ random_files/
-|           | p-value test.m
-|     |____ utils/
-|           | cindex.m
-|           | data_preprosssessing.m
-|           | eva_cv.m
-|           | eva.m
-|     |____ demonstration.m
-
+|
+|____ preprocessing/
+|     | ...
+|
+|____ sparse_autoencoder/
+|     | newPCA.m
+|     | ...
+|     |____ minFunc/
+|           | ...
+|
 ```
 This setup guide helps you open our project in `mlfp` directory on MATLAB.
 
