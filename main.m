@@ -1,3 +1,8 @@
+% Written by Lefei Chen, Gary Lai, Ziyuan Wang, Juncheng Yang, Bashan Zuo
+% Date:  Dec 15 2016
+% CS534 Machine Learning
+% Fall 2016
+
 clear
 addpath autoencoder/
 addpath genetic_algorithm/
@@ -12,7 +17,7 @@ datatype = input(prompt_datatype);
 if (datatype==1 | datatype==2 | datatype==3|datatype==4)
     prompt_method = '1->no\n2->GA\n3->AE\n4->S-AE\n5->PCA\n6->AE+GA\n7->S-AE+GA\n8->PCA+GA\n(enter a number and press enter: )\n';
     method = input(prompt_method);
-elseif (datatype==5)  
+elseif (datatype==5)
     prompt_method = '3->AE\n4->S-AE\n5->PCA\n6->AE+GA\n7->S-AE+GA\n8->PCA+GA\n(enter a number and press enter: )\n';
     method = input(prompt_method);
 end
@@ -22,11 +27,11 @@ if (method==3|method==4|method==5|method==6|method==7|method==8)
 end
 
 if (dateset==1)
-    load ('data/BRCA.mat');
-    original = BRCA;
+   original = load ('data/BRCA.mat');
+
 elseif (dateset==2)
-    load ('data/GBMLGG.mat');
-    original = GBMLGG;
+   original = load ('data/GBMLGG.mat');
+
 end
 
 if (datatype==1)
@@ -37,8 +42,8 @@ elseif (datatype==3)
     Data= original.CNV;
 elseif (datatype==4)
     Data= original.Protein;
-elseif (datatype==5)    
-    Data= original.mRNA;   
+elseif (datatype==5)
+    Data= original.mRNA;
 end
 
  K = 5;
@@ -49,7 +54,7 @@ end
 
 if (method==1)   % No feature selection, no dimension deduction
     for i = 1:K
-        Basic=Data.Features; 
+        Basic=Data.Features;
         TrainFeature = Basic(:, Folds ~= i);
         TestFeature  = Basic(:, Folds == i);
         Beta = coxphfit(TrainFeature.', Data.Survival(Folds ~= i).',...
@@ -58,55 +63,55 @@ if (method==1)   % No feature selection, no dimension deduction
             Data.Censored(Folds == i));
         clear TrainFeature TestFeature
     end
-end  
+end
 
-if (method==2)  % Genetic Algorithm 
+if (method==2)  % Genetic Algorithm
     for i = 1:K
-        Train.F=Data.Features(:,Folds ~= i); 
-        Train.S=Data.Survival(Folds ~= i); 
-        Train.C=Data.Censored(Folds ~= i); 
-        Test.F=Data.Features(:,Folds == i); 
-        Test.S=Data.Survival(Folds == i); 
-        Test.C=Data.Censored(Folds == i); 
-   
+        Train.F=Data.Features(:,Folds ~= i);
+        Train.S=Data.Survival(Folds ~= i);
+        Train.C=Data.Censored(Folds ~= i);
+        Test.F=Data.Features(:,Folds == i);
+        Test.S=Data.Survival(Folds == i);
+        Test.C=Data.Censored(Folds == i);
+
         p = size(Train.F,1); % p=number of feature
         GenomeLength = p; % This is the number of features in the dataset
         options = gaoptimset('CreationFcn', {@PopFunction},...
                              'PopulationSize',30,...
                              'Generations',50,...
-                             'PopulationType', 'bitstring',... 
+                             'PopulationType', 'bitstring',...
                              'SelectionFcn',{@selectiontournament,2},...
                              'MutationFcn',{@mutationuniform, 0.1},...
                              'CrossoverFcn', {@crossoverarithmetic,0.8},...
                              'EliteCount',2,...
                              'StallGenLimit',100,...
-                             'PlotFcns',{@gaplotbestf},...  
+                             'PlotFcns',{@gaplotbestf},...
                              'Display', 'iter',...
-                             'UseParallel', true); 
-          
+                             'UseParallel', true);
+
         FitnessFunction = @(x)c_index_fitness(x, Train);
         [chromosome,~,~,~,~,~] = ga(FitnessFunction,p,options);
         Best_feature_set = chromosome;% Best feature set
-        Final_feature_set(i,:) = Best_feature_set;       
+        Final_feature_set(i,:) = Best_feature_set;
     end
         Best=sum(Final_feature_set);
         Best_feature_Index=find(Best>=4)
         ga_dimension=length(Best_feature_Index);
         for j = 1:K
-        Train.F=Data.Features(:,Folds ~= j); 
-        Train.S=Data.Survival(Folds ~= j); 
-        Train.C=Data.Censored(Folds ~= j); 
-        Test.F=Data.Features(:,Folds == j); 
-        Test.S=Data.Survival(Folds == j); 
-        Test.C=Data.Censored(Folds == j); 
+        Train.F=Data.Features(:,Folds ~= j);
+        Train.S=Data.Survival(Folds ~= j);
+        Train.C=Data.Censored(Folds ~= j);
+        Test.F=Data.Features(:,Folds == j);
+        Test.S=Data.Survival(Folds == j);
+        Test.C=Data.Censored(Folds == j);
         Beta = coxphfit(Train.F(Best_feature_Index,:).',  Train.S.','Censoring',  Train.C.');
-        C(j) = cIndex(Beta,  Test.F(Best_feature_Index,:).', Test.S, Test.C);      
+        C(j) = cIndex(Beta,  Test.F(Best_feature_Index,:).', Test.S, Test.C);
         end
-end  
+end
 
 if (method==3) % Autoencoder
         for i = 1:K
-            Basic=Data.Features; 
+            Basic=Data.Features;
             [TrainFeature, Data_weight] = autoencoder(Basic(:, Folds ~= i), dimension);
             TestFeature = encode(Data_weight, Basic(:, Folds == i));
             Beta = coxphfit(TrainFeature.', Data.Survival(Folds ~= i).',...
@@ -115,32 +120,32 @@ if (method==3) % Autoencoder
                 Data.Censored(Folds == i));
             clear TrainFeature TestFeature Beta
         end
-end  
+end
 
 
-if (method==4) 
+if (method==4)
     % Sparse-Autoencoder
     for i = 1:K
         Basic=Data.Features;
         [ TrainFeature, Data_weight,b ] = sparse_autoencoder(Basic(:, Folds ~= i), dimension);
-        TestFeature = s_encode(Data_weight,b, Basic(:, Folds == i));  
+        TestFeature = s_encode(Data_weight,b, Basic(:, Folds == i));
         Beta = coxphfit(TrainFeature.', Data.Survival(Folds ~= i).',...
             'Censoring', Data.Censored(Folds ~= i).');
         C(i) = cIndex(Beta, TestFeature.', Data.Survival(Folds == i),...
             Data.Censored(Folds == i));
         clear TrainFeature TestFeature
     end
-    
-end  
+
+end
 
 if (method==5)   % PCA
     for i = 1:K
         Basic=Data.Features;
 
-        [TrainFeature, mapping] = newPCA(Basic(:, Folds ~= i)', dimension);        
-        TestFeature= Basic(:, Folds == i)' * mapping.M; 
-        TestFeature = TestFeature - mean(TestFeature, 1); 
-     
+        [TrainFeature, mapping] = newPCA(Basic(:, Folds ~= i)', dimension);
+        TestFeature= Basic(:, Folds == i)' * mapping.M;
+        TestFeature = TestFeature - mean(TestFeature, 1);
+
         TrainFeature=TrainFeature';
         TestFeature=TestFeature';
 
@@ -150,71 +155,161 @@ if (method==5)   % PCA
             Data.Censored(Folds == i));
         clear TrainFeature TestFeature
     end
-end  
+end
 
 
 if (method==6)   % AE+GA
     for i = 1:K
-        Basic=Data.Features; 
+        Basic=Data.Features;
         [TrainFeature, Data_weight] = autoencoder(Basic(:, Folds ~= i), dimension);
         TestFeature = encode(Data_weight, Basic(:, Folds == i));
         eval(['TrainFeature' num2str(i) '= TrainFeature']);
         eval(['TestFeature' num2str(i) '= TestFeature']);
-        
-        Train.F=TrainFeature; 
-        Train.S=Data.Survival(Folds ~= i); 
-        Train.C=Data.Censored(Folds ~= i); 
-        Test.F=TestFeature; 
-        Test.S=Data.Survival(Folds == i); 
-        Test.C=Data.Censored(Folds == i); 
+
+        Train.F=TrainFeature;
+        Train.S=Data.Survival(Folds ~= i);
+        Train.C=Data.Censored(Folds ~= i);
+        Test.F=TestFeature;
+        Test.S=Data.Survival(Folds == i);
+        Test.C=Data.Censored(Folds == i);
         p = size(Train.F,1); % p=number of feature
         GenomeLength = p; % This is the number of features in the dataset
         options = gaoptimset('CreationFcn', {@PopFunction},...
                              'PopulationSize',30,...
                              'Generations',50,...
-                             'PopulationType', 'bitstring',... 
+                             'PopulationType', 'bitstring',...
                              'SelectionFcn',{@selectiontournament,2},...
                              'MutationFcn',{@mutationuniform, 0.1},...
                              'CrossoverFcn', {@crossoverarithmetic,0.8},...
                              'EliteCount',2,...
                              'StallGenLimit',100,...
-                             'PlotFcns',{@gaplotbestf},...  
+                             'PlotFcns',{@gaplotbestf},...
                              'Display', 'iter',...
-                             'UseParallel', true); 
-          
+                             'UseParallel', true);
+
         FitnessFunction = @(x)c_index_fitness(x, Train);
         [chromosome,~,~,~,~,~] = ga(FitnessFunction,p,options);
         Best_feature_set = chromosome;% Best feature set
-        Final_feature_set(i,:) = Best_feature_set;       
+        Final_feature_set(i,:) = Best_feature_set;
     end
     Best=sum(Final_feature_set);
     Best_feature_Index=find(Best>=4)
     ga_dimension=length(Best_feature_Index);
         for j = 1:K
-%         Basic=Data.Features; 
-%         [TrainFeature, Data_weight] = autoencoder(Basic(:, Folds ~= j), dimension);
-%         TestFeature = encode(Data_weight, Basic(:, Folds == j));
-        Train.F=eval(['TrainFeature' num2str(j)]); 
-        Train.S=Data.Survival(Folds ~= j); 
-        Train.C=Data.Censored(Folds ~= j); 
-        Test.F=eval(['TestFeature' num2str(j)]);  
-        Test.S=Data.Survival(Folds == j); 
-        Test.C=Data.Censored(Folds == j); 
+        Train.F=eval(['TrainFeature' num2str(j)]);
+        Train.S=Data.Survival(Folds ~= j);
+        Train.C=Data.Censored(Folds ~= j);
+        Test.F=eval(['TestFeature' num2str(j)]);
+        Test.S=Data.Survival(Folds == j);
+        Test.C=Data.Censored(Folds == j);
         Beta = coxphfit(Train.F(Best_feature_Index,:).',  Train.S.','Censoring',  Train.C.');
-        C(j) = cIndex(Beta,  Test.F(Best_feature_Index,:).', Test.S, Test.C);      
-        end 
-end  
+        C(j) = cIndex(Beta,  Test.F(Best_feature_Index,:).', Test.S, Test.C);
+        end
+end
+
+if (method==7)   % SAE+GA
+    for i = 1:K
+        Basic=Data.Features;
+         [ TrainFeature, Data_weight,b ] = sparse_autoencoder(Basic(:, Folds ~= i), dimension);
+        TestFeature = s_encode(Data_weight,b, Basic(:, Folds == i));
+
+        eval(['TrainFeature' num2str(i) '= TrainFeature']);
+        eval(['TestFeature' num2str(i) '= TestFeature']);
+
+        Train.F=TrainFeature;
+        Train.S=Data.Survival(Folds ~= i);
+        Train.C=Data.Censored(Folds ~= i);
+        Test.F=TestFeature;
+        Test.S=Data.Survival(Folds == i);
+        Test.C=Data.Censored(Folds == i);
+        p = size(Train.F,1); % p=number of feature
+        GenomeLength = p; % This is the number of features in the dataset
+        options = gaoptimset('CreationFcn', {@PopFunction},...
+                             'PopulationSize',30,...
+                             'Generations',50,...
+                             'PopulationType', 'bitstring',...
+                             'SelectionFcn',{@selectiontournament,2},...
+                             'MutationFcn',{@mutationuniform, 0.1},...
+                             'CrossoverFcn', {@crossoverarithmetic,0.8},...
+                             'EliteCount',2,...
+                             'StallGenLimit',100,...
+                             'PlotFcns',{@gaplotbestf},...
+                             'Display', 'iter',...
+                             'UseParallel', true);
+
+        FitnessFunction = @(x)c_index_fitness(x, Train);
+        [chromosome,~,~,~,~,~] = ga(FitnessFunction,p,options);
+        Best_feature_set = chromosome;% Best feature set
+        Final_feature_set(i,:) = Best_feature_set;
+    end
+    Best=sum(Final_feature_set);
+    Best_feature_Index=find(Best>=4)
+    ga_dimension=length(Best_feature_Index);
+        for j = 1:K
+        Train.F=eval(['TrainFeature' num2str(j)]);
+        Train.S=Data.Survival(Folds ~= j);
+        Train.C=Data.Censored(Folds ~= j);
+        Test.F=eval(['TestFeature' num2str(j)]);
+        Test.S=Data.Survival(Folds == j);
+        Test.C=Data.Censored(Folds == j);
+        Beta = coxphfit(Train.F(Best_feature_Index,:).',  Train.S.','Censoring',  Train.C.');
+        C(j) = cIndex(Beta,  Test.F(Best_feature_Index,:).', Test.S, Test.C);
+        end
+end
 
 
+if (method==8)   % PCA+GA
+    for i = 1:K
+        Basic=Data.Features;
+        [TrainFeature, mapping] = newPCA(Basic(:, Folds ~= i)', dimension);
+        TestFeature= Basic(:, Folds == i)' * mapping.M;
+        TestFeature = TestFeature - mean(TestFeature, 1);
 
+        TrainFeature=TrainFeature';
+        TestFeature=TestFeature';
+        eval(['TrainFeature' num2str(i) '= TrainFeature']);
+        eval(['TestFeature' num2str(i) '= TestFeature']);
 
+        Train.F=TrainFeature;
+        Train.S=Data.Survival(Folds ~= i);
+        Train.C=Data.Censored(Folds ~= i);
+        Test.F=TestFeature;
+        Test.S=Data.Survival(Folds == i);
+        Test.C=Data.Censored(Folds == i);
+        p = size(Train.F,1); % p=number of feature
+        GenomeLength = p; % This is the number of features in the dataset
+        options = gaoptimset('CreationFcn', {@PopFunction},...
+                             'PopulationSize',30,...
+                             'Generations',50,...
+                             'PopulationType', 'bitstring',...
+                             'SelectionFcn',{@selectiontournament,2},...
+                             'MutationFcn',{@mutationuniform, 0.1},...
+                             'CrossoverFcn', {@crossoverarithmetic,0.8},...
+                             'EliteCount',2,...
+                             'StallGenLimit',100,...
+                             'PlotFcns',{@gaplotbestf},...
+                             'Display', 'iter',...
+                             'UseParallel', true);
 
-
-
-
-
-
-
+        FitnessFunction = @(x)c_index_fitness(x, Train);
+        [chromosome,~,~,~,~,~] = ga(FitnessFunction,p,options);
+        Best_feature_set = chromosome;% Best feature set
+        Final_feature_set(i,:) = Best_feature_set;
+    end
+    Best=sum(Final_feature_set);
+    Best_feature_Index=find(Best>=4)
+    ga_dimension=length(Best_feature_Index);
+        for j = 1:K
+        Train.F=eval(['TrainFeature' num2str(j)]);
+        Train.S=Data.Survival(Folds ~= j);
+        Train.C=Data.Censored(Folds ~= j);
+        Test.F=eval(['TestFeature' num2str(j)]);
+        Test.S=Data.Survival(Folds == j);
+        Test.C=Data.Censored(Folds == j);
+        Beta = coxphfit(Train.F(Best_feature_Index,:).',  Train.S.','Censoring',  Train.C.');
+        C(j) = cIndex(Beta,  Test.F(Best_feature_Index,:).', Test.S, Test.C);
+        end
+end
 
 
 if(method ==1)
